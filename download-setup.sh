@@ -9,6 +9,11 @@ build=build
 mkdir ${build}
 
 echo -e "\n\n\033[1;35m###########################################"
+echo -e "### QHULL download and setup            ###"
+echo -e "###########################################\033[m\n\n"
+git clone https://github.com/qhull/qhull.git ${build}/qhull
+
+echo -e "\n\n\033[1;35m###########################################"
 echo -e "### EIGEN download and setup            ###"
 echo -e "###########################################\033[m\n\n"
 [ -f ${eigen} ] || wget http://bitbucket.org/eigen/eigen/get/${eigen} -O ${eigen} || exit 1

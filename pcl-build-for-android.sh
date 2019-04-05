@@ -31,6 +31,33 @@ EIGEN_INCLUDE_DIR=${ROOT}/eigen # eigen needs no cross-compiling
 FLANN_ROOT=${ROOT}/flann
 BOOST_ROOT=${ROOT}/boost
 PCL_ROOT=${ROOT}/pcl
+QHULL_ROOT=${ROOT}/qhull
+
+echo -e "\n\n\033[1;35m###########################################"
+echo -e "### QHULL cross-compiling start...      ###"
+echo -e "###########################################\033[m\n\n"
+
+cd ${QHULL_ROOT}
+
+cmake . -DCMAKE_BUILD_TYPE:STRING=Release \
+  -DCMAKE_TOOLCHAIN_FILE:FILEPATH=$ANDROIDTOOLCHAIN \
+  -DBUILD_SHARED_LIBS:BOOL=OFF
+
+make -j${jobs}
+
+cd ..
+echo "QHULL cross-compiling finished!"
+
+### copy build lib files and headers to correct desctination
+rm -rf ${ROOT}/qhull-android
+mkdir -p ${ROOT}/qhull-android/lib
+#mkdir -p ${ROOT}/qhull-android/include
+
+cp ${ROOT}/qhull/libqhullstatic.a ${ROOT}/qhull-android/lib
+cp -rf qhull/src qhull-android/include
+
+QHULL_LIBRARY=${ROOT}/qhull-android/lib
+QHULL_INCLUDE_DIR=${ROOT}/qhull-android/include
 
 echo -e "\n\n\033[1;35m###########################################"
 echo -e "### FLANN cross-compiling start...      ###"
@@ -116,10 +143,13 @@ function cmake_pcl {
     -DEIGEN_INCLUDE_DIR:PATH=${EIGEN_INCLUDE_DIR} \
     -DFLANN_INCLUDE_DIR:PATH=${FLANN_INCLUDE_DIR} \
     -DFLANN_LIBRARY:FILEPATH=${FLANN_LIBRARY}/libflann_cpp_s.a \
+    -DQHULL_ROOT:PATH=${QHULL_ROOT} \
+    -DQHULL_INCLUDE_DIR:PATH=${QHULL_INCLUDE_DIR} \
+    -DQHULL_LIBRARY:FILEPATH=${QHULL_LIBRARY}/libqhullstatic.a \
     -DBOOST_ROOT:PATH=${BOOST_ROOT} \
     -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIRS} \
     -DWITH_VTK:BOOL=OFF \
-    -DWITH_QHULL:BOOL=OFF \
+    -DWITH_QHULL:BOOL=ON \
     -DWITH_PCAP:BOOL=OFF \
     -DWITH_PNG:BOOL=OFF \
     -DWITH_OPENGL:BOOL=OFF \
